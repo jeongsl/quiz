@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=, initial-scale=1.0">
+    <title>퀴즈 앱</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #1a1a2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #eee;
+        }
+
+        .quiz-container {
+            background-color: #16213e;
+            padding: 40px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #e94560;
+        }
+
+        #question-count {
+            text-align: right;
+            color: #888;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        #question {
+            font-size: 20px;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .option-btn {
+            display: block;
+            width: 100%;
+            padding: 14px 20px;
+            margin-bottom: 12px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background-color: #0f3460;
+            color: #eee;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover {
+            border-color: #e94560;
+            background-color: #1a4a7a;
+        }
+
+        .option-btn.correct {
+            background-color: #2ecc71;
+            border-color: #27ae60;
+            color: white;
+        }
+
+        .option-btn.wrong {
+            background-color: #e74c3c;
+            border-color: #c0392b;
+            color: white;
+        }
+
+        .option-btn.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        #feedback {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 16px 0;
+            min-height: 28px;
+        }
+
+        #next-btn,
+        #restart-btn {
+            display: none;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background-color: #e94560;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        #next-btn:hover,
+        #restart-btn:hover {
+            background-color: #c0392b;
+        }
+
+        #result-box {
+            text-align: center;
+        }
+
+        #result-title {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        #result-score {
+            font-size: 48px;
+            font-weight: bold;
+            color: #e94560;
+            margin: 20px 0;
+        }
+
+        #result-message {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #aaa;
+        }
+
+        #restart-btn {
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="quiz-container">
+        <h1>퀴즈 타임!</h1>
+
+        <div id="quiz-box">
+            <div id="question-count">문제 1 / 5</div>
+            <h2 id="question">문제가 여기에 표시됩니다</h2>
+
+            <div id="options">
+                <button class="option-btn" data-index="0">보기 1</button>
+                <button class="option-btn" data-index="1">보기 2</button>
+                <button class="option-btn" data-index="2">보기 3</button>
+                <button class="option-btn" data-index="3">보기 4</button>
+            </div>
+
+            <div id="feedback"></div>
+            <button id="next-btn">다음 문제</button>
+        </div>
+
+        <div id="result-box" style="display: none;">
+            <h2 id="result-title">결과</h2>
+            <p id="result-score"></p>
+            <p id="result-message"></p>
+            <button id="restart-btn">다시 풀기</button>
+        </div>
+    </div>
+    <script>
+        const quizData = [
+            {
+                question: "내가 요즘 꽂힌 노래는?",
+                options: ["김민석 (멜로망스) - 사랑의 언어 (Love Language)", "웬디 (WENDY) - Daydream", "Hearts2Hearts (하츠투하츠)- FOCUS", "ALLDAY PROJECT, ANNIE, WOOCHAN - WHERE YOU AT"],
+                answer: 1
+            },
+            {
+                question: "내가 가장 많이 본 뮤지컬은?",
+                options: ["킹키부츠", "데스노트", "물랑루즈", "지킬앤하이드"],
+                answer: 1
+            },
+            {
+                question: "나의 엽떡 최애 맛은?",
+                options: ["로제", "마라", "마라로제", "오리지널"],
+                answer: 2
+            },
+            {
+                question: "나의 본관은?",
+                options: ["경주 정씨", "동래 정씨", "진양 정씨", "하동 정씨"],
+                answer: 2
+            },
+            {
+                question: "나의 혈액형은?",
+                options: ["A", "B", "O", "AB"],
+                answer: 1
+            }
+        ]
+
+        let currentQuestion = 0
+        let score = 0
+
+        const questionCount = document.querySelector("#question-count")
+        const questionText = document.querySelector("#question")
+        const optionButtons = document.querySelectorAll(".option-btn")
+        const feedback = document.querySelector("#feedback")
+        const nextBtn = document.querySelector("#next-btn")
+        const quizBox = document.querySelector("#quiz-box")
+        const resultBox = document.querySelector("#result-box")
+        const resultScore = document.querySelector("#result-score")
+        const resultMessage = document.querySelector("#result-message")
+        const restartBtn = document.querySelector("#restart-btn")
+
+        function showQuestion() {
+            let current = quizData[currentQuestion]
+
+            questionCount.textContent = `문제 ${currentQuestion + 1} / ${quizData.length}`
+            questionText.textContent = current.question
+
+            optionButtons.forEach(function (button, index) {
+                button.textContent = current.options[index]
+                button.className = "option-btn"
+            })
+
+            feedback.textContent = ""
+            nextBtn.style.display = "none"
+        }
+
+        function checkAnswer(selectedIndex) {
+            let current = quizData[currentQuestion]
+            let correctIndex = current.answer
+
+            optionButtons.forEach(function (button) {
+                button.classList.add("disabled")
+            })
+
+            optionButtons[correctIndex].classList.add("correct")
+
+            if (selectedIndex === correctIndex) {
+                score = score + 1
+                feedback.textContent = "정답입니다!"
+                feedback.style.color = "#2ecc71"
+            } else {
+                optionButtons[selectedIndex].classList.add("wrong")
+                feedback.textContent = "오답입니다! 정답은 위에 초록색으로 표시됩니다."
+                feedback.style.color = "#e74c3c"
+            }
+
+            nextBtn.style.display = "block"
+        }
+
+        function showResult() {
+            quizBox.style.display = "none"
+            resultBox.style.display = "block"
+
+            resultScore.textContent = `${score} / ${quizData.length}`
+
+            let percentage = (score / quizData.length) * 100
+
+            if (percentage === 100) {
+                resultMessage.textContent = "완벽합니다! 천재 아닌가요?"
+            } else if (percentage >= 80) {
+                resultMessage.textContent = "훌륭합니다! 거의 다 맞혔네요!"
+            } else if (percentage >= 60) {
+                resultMessage.textContent = "잘했습니다! 조금만 더 복습하면 완벽해질 거예요."
+            } else {
+                resultMessage.textContent = "괜찮습니다! 다시 풀어보면 분명 더 잘할 수 있을 거예요."
+            }
+        }
+
+        // 보기 버튼에 이벤트 연결
+        optionButtons.forEach(function (button) {
+            button.addEventListener("click", function () {
+                let selectedIndex = Number(button.dataset.index)
+                checkAnswer(selectedIndex)
+            })
+        })
+
+        // "다음 문제" 버튼 이벤트
+        nextBtn.addEventListener("click", function () {
+            currentQuestion = currentQuestion + 1
+
+            if (currentQuestion < quizData.length) {
+                showQuestion()
+            } else {
+                showResult()
+            }
+        })
+
+        // "다시 풀기" 버튼 이벤트
+        restartBtn.addEventListener("click", function () {
+            currentQuestion = 0
+            score = 0
+            quizBox.style.display = "block"
+            resultBox.style.display = "none"
+            showQuestion()
+        })
+
+        // 페이지가 열리면 첫 번째 문제를 표시
+        showQuestion()
+    </script>
+
+</body>
+
+</html>
