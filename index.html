@@ -130,10 +130,6 @@
             margin: 20px 0;
         }
 
-        #result-image {
-            width : 300px;
-        }
-
         #result-message {
             font-size: 18px;
             margin-bottom: 30px;
@@ -285,6 +281,11 @@
 
             resultScore.textContent = `${score} / ${quizData.length}`
             const imgElement = document.getElementById('result-image');
+
+            imgElement.style.width = "100%";
+            imgElement.style.maxWidth = "300px";
+            // imgElement.style.borderRadius = "10px";
+            // imgElement.style.marginBottom = "20px";
 
             let percentage = (score / quizData.length) * 100
 
