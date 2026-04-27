@@ -264,11 +264,11 @@
 
             if (selectedIndex === correctIndex) {
                 score = score + 1
-                feedback.textContent = "정답입니다!"
+                feedback.textContent = "정답입니다😄"
                 feedback.style.color = "#2ecc71"
             } else {
                 optionButtons[selectedIndex].classList.add("wrong")
-                feedback.textContent = "오답입니다! 정답은 위에 초록색으로 표시됩니다."
+                feedback.textContent = "오답입니다🙁 정답은 위에 초록색으로 표시됩니다."
                 feedback.style.color = "#e74c3c"
             }
 
@@ -290,16 +290,16 @@
             let percentage = (score / quizData.length) * 100
 
             if (percentage === 100) {
-                resultMessage.textContent = "완벽합니다! 천재 아닌가요?"
+                resultMessage.textContent = "완벽합니다! 당신은 천재😍"
                 imgElement.src = "https://img.sbs.co.kr/newsnet/etv/upload/2017/08/20/30000577401_700.jpg";
             } else if (percentage >= 80) {
-                resultMessage.textContent = "훌륭합니다! 거의 다 맞혔네요!"
+                resultMessage.textContent = "훌륭합니다! 거의 다 맞혔네요😊"
                 imgElement.src = "https://cdn.topstarnews.net/news/photo/first/201712/img_335908_1.jpg";
             } else if (percentage >= 60) {
-                resultMessage.textContent = "잘했습니다! 조금만 더 복습하면 완벽해질 거예요."
+                resultMessage.textContent = "잘했습니다! 조금만 더 복습하면 완벽해질 거예요🙂"
                 imgElement.src = "https://phinf.wevpstatic.net/MjAyMzEwMTlfMTc1/MDAxNjk3NjQ2Mzg5NDk4._M8qXl1JJxI-1sCP0QdMkH5YFM9XnCzU6DBPUL6MxwMg.HVGTwCw-tv5OEOmG6FpJut_rnbu6zCAD_3OA_EIkdnAg.JPEG/image.jpg";
             } else {
-                resultMessage.textContent = "괜찮습니다! 다시 풀어보면 분명 더 잘할 수 있을 거예요."
+                resultMessage.textContent = "괜찮습니다! 다시 풀어보면 분명 더 잘할 수 있을 거예요😥"
                 imgElement.src = "https://talkimg.imbc.com/TVianUpload/TVian/TViews/image/2017/11/08/duh9hknuhxzb636457338975343218.jpg";
             }
         }
